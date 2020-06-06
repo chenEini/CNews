@@ -1,28 +1,24 @@
-const articles = [
-	{
-		id: '1',
-		title: 'title mock 1',
-		content: 'content mock 1',
-		createdAt: Date.now()
-	},
-	{
-		id: '2',
-		title: 'title mock 2',
-		content: 'content mock 2',
-		createdAt: Date.now()
-	},
-	{
-		id: '3',
-		title: 'title mock 3',
-		content: 'content mock 3',
-		createdAt: Date.now()
-	}
-];
+const articles = require('../models/article.model');
+const { getMaxId } = require('../services/utils');
 
 module.exports = (app) => {
-	app.route('/api/articles').get((req, res) => {
-		res.json(articles);
-	});
+	app.route('/api/articles')
+		.get((req, res) => {
+			const { startDate, endDate, catergoey } = req.query;
+
+			console.log(startDate, endDate, catergoey);
+			res.json(articles);
+		})
+		.post((req, res) => {
+			const newArticle = req.body;
+
+			if (!newArticle.id) {
+				newArticle.id = getMaxId(articles) + 1;
+			}
+
+			articles.push(newArticle);
+			res.status(201).json(newArticle);
+		});
 
 	app.route('/api/articles/:id').get((req, res) => {
 		const { id } = req.params;
