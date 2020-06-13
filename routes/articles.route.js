@@ -4,10 +4,18 @@ const { getMaxId } = require('../services/utils');
 module.exports = (app) => {
 	app.route('/api/articles')
 		.get((req, res) => {
-			const { startDate, endDate, catergoey } = req.query;
+			let { startDate, endDate, category } = req.query;
 
-			console.log(startDate, endDate, catergoey);
-			res.json(articles);
+			startDate = startDate || 0;
+			endDate = endDate|| Date.now();
+
+			const filteredArticles = articles.filter(
+				a => a.category === (category || a.category) &&
+					a.createdAt >= startDate &&
+					a.createdAt <= endDate
+			);
+
+			res.json(filteredArticles);
 		})
 		.post((req, res) => {
 			const newArticle = req.body;
