@@ -8,7 +8,7 @@ const categorySchema = mongoose.Schema({
 	}
 });
 
-mongoose.model('Category', categorySchema);
+module.exports = mongoose.model('Category', categorySchema);
 
 const categories = [
 	{
@@ -32,5 +32,3 @@ const categories = [
 		name: 'Health'
 	}
 ];
-
-module.exports = categories;
