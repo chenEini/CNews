@@ -1,36 +1,48 @@
-const articles = require('../models/article.model');
-const { getMaxId } = require('../services/utils');
+const Article = require('../models/article.model');
 
 module.exports = (app) => {
 	app.route('/api/articles')
-		.get((req, res) => {
+		.get(async (req, res) => {
 			let { startDate, endDate, category } = req.query;
+			const query = {}
 
-			startDate = startDate || 0;
-			endDate = endDate|| Date.now();
-
-			const filteredArticles = articles.filter(
-				a => a.category === (category || a.category) &&
-					a.createdAt >= startDate &&
-					a.createdAt <= endDate
-			);
-
-			res.json(filteredArticles);
-		})
-		.post((req, res) => {
-			const newArticle = req.body;
-
-			if (!newArticle.id) {
-				newArticle.id = getMaxId(articles) + 1;
+			if (category) {
+				query.category = category;
 			}
 
-			articles.push(newArticle);
-			res.status(201).json(newArticle);
+			if (startDate) {
+				query.createdAt = { $gte: startDate }
+			}
+
+			if (endDate) {
+				query.createdAt = query.createdAt || {};
+				query.createdAt = {...query.createdAt, ...{ $lte: endDate }};
+			}
+
+			try {
+				const articles = await Article.find(query).sort({ createdAt: -1 }).populate('category');
+				res.json(articles);
+			} catch (e) {
+				console.log('Failed to find articles', e)
+			}
+		})
+		.post(async (req, res) => {
+			try {
+				const newArticle = await Article.create(req.body);
+				res.status(201).json(newArticle);
+			} catch (e) {
+				console.log('Failed to add article', e);
+			}
 		});
 
-	app.route('/api/articles/:id').get((req, res) => {
+	app.route('/api/articles/:id').get(async (req, res) => {
 		const { id } = req.params;
-		const article = articles.find(a => a.id === id);
-		res.json(article || {});
+
+		try {
+			const article = await Article.findById(id).populate('category');
+			res.json(article);
+		} catch (e) {
+			console.log('Failed to get article', e);
+		}
 	})
 };

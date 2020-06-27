@@ -1,15 +1,22 @@
 const Category = require('../models/category.model');
-const { getMaxId } = require('../services/utils');
 
 module.exports = (app) => {
 	app.route('/api/categories')
 		.get(async (req, res) => {
-			const categories = await Category.find({});
-			res.json(categories);
+			try {
+				const categories = await Category.find({});
+				res.json(categories);
+			} catch (e) {
+				console.log('Failed to get the categories', e);
+			}
 		})
 		.post(async (req, res) => {
-			const newCategory = await Category.create(req.body, {new: true});
-			res.status(201).json(newCategory);
+			try {
+				const newCategory = await Category.create(req.body);
+				res.status(201).json(newCategory);
+			} catch (e) {
+				console.log(`Failed to add the category ${req.body.name}`, e);
+			}
 		});
 
 	app.route('/api/categories/:id').get((req, res) => {
