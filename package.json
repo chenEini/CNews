@@ -1,6 +1,6 @@
 {
-  "name": "untitled",
-  "version": "0.0.0",
+  "name": "cnews",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build-client": "cd client && npm run build",
