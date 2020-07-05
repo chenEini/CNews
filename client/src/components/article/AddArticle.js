@@ -38,6 +38,10 @@ function AddArticle() {
         ArticlesService.addArticle(newArticleTitle, newArticleContent, newArticleCategory).then(() => {
             console.log('New article was added');
         }).catch(console.log);
+
+        setNewArticleTitle('');
+        setNewArticleContent('');
+        setNewArticleCategory(-1);
     };
 
     const renderCategoryOptions = () => categories.map((c, i) =>

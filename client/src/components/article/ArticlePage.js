@@ -7,12 +7,23 @@ import { ArticlesService } from "../../services/articles.service";
 function ArticlePage() {
     let { articleId } = useParams();
     const [article, setArticle] = useState(null);
+    const [articleDate, setArticleDate] = useState("");
 
     useEffect(() => {
         ArticlesService.getArticle(articleId).then((article) => {
             setArticle(article)
         }).catch(console.log);
     }, [articleId]);
+
+    useEffect(() => {
+        if (article) {
+            ArticlesService.getArticleDate(article)
+                .then(res => setArticleDate(res))
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+    }, [article]);
 
     return (
     	!article ? null :
@@ -24,7 +35,7 @@ function ArticlePage() {
                 {article.content}
             </article>
             <footer>
-                {article.created_at} | {article.views} views
+                {articleDate ? (`${articleDate} |`) : ''} {article.views} views
             </footer>
         </div>
     )
